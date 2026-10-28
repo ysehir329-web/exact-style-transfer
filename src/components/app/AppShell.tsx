@@ -1,5 +1,5 @@
 import { LiquidTabBar } from "./LiquidTabBar";
-import { BookOpen, Users, CalendarCheck, FileText, Menu } from "lucide-react";
+import { BookOpen, Users, CalendarCheck, FileText, Menu } from "./icons";
 import type { ReactNode } from "react";
 
 const tabs = [

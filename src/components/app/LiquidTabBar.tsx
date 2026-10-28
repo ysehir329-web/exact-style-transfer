@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "./icons";
 
 type Tab = { to: string; label: string; icon: LucideIcon };
 
