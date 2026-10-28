@@ -13,7 +13,7 @@ const iconDeps = [
   ...readFileSync(new URL("./src/components/app/icons.ts", import.meta.url), "utf8").matchAll(
     /from "(lucide-react\/dist\/esm\/icons\/[^"]+)"/g,
   ),
-].map((m) => m[1]);
+].map((m) => m[1] as string);
 
 export default defineConfig({
   tanstackStart: {
