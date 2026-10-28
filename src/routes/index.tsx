@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, User, GraduationCap, Plus, Users } from "lucide-react";
+import { Search, User, GraduationCap, Users, Menu as MenuIcon } from "lucide-react";
 import { AppShell, Avatar } from "@/components/app/AppShell";
-import { Sheet } from "@/components/app/Sheet";
-import { StudentForm, emptyStudent } from "@/components/app/StudentForm";
 import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -19,22 +17,16 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { students, addStudent } = useStore();
+  const { students } = useStore();
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState(false);
   const list = students.filter((s) => s.name.toLocaleLowerCase("tr").includes(q.toLocaleLowerCase("tr")));
   return (
     <AppShell>
       <div className="mt-7 flex items-center justify-between">
         <h2 className="font-serif text-2xl font-bold">Talebeler</h2>
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-sm">
-            <User className="h-4 w-4" /> {students.length}
-          </span>
-          <button onClick={() => setOpen(true)} className="flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm text-primary-foreground">
-            <Plus className="h-4 w-4" /> Ekle
-          </button>
-        </div>
+        <span className="flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-sm">
+          <User className="h-4 w-4" /> {students.length}
+        </span>
       </div>
       <div className="mt-5 flex items-center gap-2 rounded-2xl bg-surface px-4 py-3">
         <Search className="h-4 w-4 text-muted-foreground" />
@@ -44,10 +36,10 @@ function Index() {
         <div className="mt-6 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
           <Users className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="mt-3 font-serif text-lg font-bold">Henüz talebe yok</p>
-          <p className="mt-1 text-sm text-muted-foreground">İlk talebenizi ekleyerek başlayın.</p>
-          <button onClick={() => setOpen(true)} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm text-primary-foreground">
-            <Plus className="h-4 w-4" /> Talebe Ekle
-          </button>
+          <p className="mt-1 text-sm text-muted-foreground">Talebe eklemek için Menü'ye gidin.</p>
+          <Link to="/menu" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm text-primary-foreground">
+            <MenuIcon className="h-4 w-4" /> Menü'ye Git
+          </Link>
         </div>
       ) : (
         <>
@@ -74,9 +66,6 @@ function Index() {
           </div>
         </>
       )}
-      <Sheet open={open} onClose={() => setOpen(false)} title="Yeni Talebe">
-        <StudentForm initial={emptyStudent} onSubmit={(s) => { addStudent(s); setOpen(false); }} />
-      </Sheet>
     </AppShell>
   );
 }
