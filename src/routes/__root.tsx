@@ -13,6 +13,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
+import { installChunkReloadHandler, isChunkLoadError, reloadForChunkError } from "../lib/chunk-reload";
+
+installChunkReloadHandler();
 
 function NotFoundComponent() {
   return (
@@ -40,6 +43,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    if (isChunkLoadError(error) && reloadForChunkError()) return;
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
