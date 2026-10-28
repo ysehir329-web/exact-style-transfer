@@ -19,7 +19,7 @@ function runIdFetch() {
 
 /** One-shot text generation. Streams from the gateway, returns the final text. */
 export async function generateTextViaGateway(instructions: string, prompt: string): Promise<string> {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new Error("AI yapılandırılmamış.");
   const provider = createOpenAI({
     baseURL: GATEWAY_URL,
