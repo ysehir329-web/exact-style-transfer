@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X } from "./icons";
 import type { ReactNode } from "react";
 
 export function Sheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {

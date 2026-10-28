@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, User, GraduationCap, Users, Menu as MenuIcon } from "lucide-react";
+import { Search, User, GraduationCap, Users, Menu as MenuIcon } from "@/components/app/icons";
 import { AppShell, Avatar } from "@/components/app/AppShell";
 import { useStore } from "@/lib/store";
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Calendar, FileText, Camera, ImagePlus, Sparkles } from "lucide-react";
+import { Calendar, FileText, Camera, ImagePlus, Sparkles } from "@/components/app/icons";
 import { AppShell } from "@/components/app/AppShell";
 
 export const Route = createFileRoute("/kagit")({

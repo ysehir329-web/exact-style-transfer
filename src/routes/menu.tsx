@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { Download, Upload, RotateCcw, FileDown, UserPlus } from "lucide-react";
+import { Download, Upload, RotateCcw, FileDown, UserPlus } from "@/components/app/icons";
 import { AppShell } from "@/components/app/AppShell";
 import { ReportSheet } from "@/components/app/ReportSheet";
 import { Sheet } from "@/components/app/Sheet";

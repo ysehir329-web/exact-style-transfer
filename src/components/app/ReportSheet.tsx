@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Loader2 } from "./icons";
 import { Sheet, Field, inputCls, primaryBtn } from "./Sheet";
 import { useStore } from "@/lib/store";
 import { PERIODS, buildReport, filterRows, periodRange, rangeLabel, type Period } from "@/lib/report";
