@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, Pencil, Trash2, MapPin, Calendar, User, Phone, Plus,
-  CalendarDays, BookOpen, Clock, CalendarOff, Sunrise, Sun, CloudSun, Sunset, Moon,
-  CheckCircle2, CalendarX, Printer, Download, AlertTriangle, PenLine, ThumbsUp, X,
+  ArrowLeft, Pencil, Trash2, MapPin, User, Phone, Plus,
+  CalendarDays, Clock, CalendarOff, Sunrise, Sun, CloudSun, Sunset, Moon,
+  CheckCircle2, CalendarX, Printer, AlertTriangle, PenLine, ThumbsUp, X,
 } from "lucide-react";
 import { AppShell, Avatar } from "@/components/app/AppShell";
 import { Sheet, Field, inputCls, primaryBtn } from "@/components/app/Sheet";
@@ -27,17 +27,7 @@ const tabs = ["Yoklama", "Tutanaklar", "Aile Raporu"] as const;
 const vakitIcons = { Sabah: Sunrise, Öğle: Sun, İkindi: CloudSun, Akşam: Sunset, Yatsı: Moon } as Record<string, typeof Clock>;
 const TAGS = ["Namaza Katılmama", "Derse Geç Kalma", "Disiplinsizlik", "Arkadaşlarıyla Tartışma", "Güzel Davranış", "Başarı", "Diğer"];
 const today = () => new Date().toISOString().slice(0, 10);
-const weekday = (d: string) => new Date(d + "T12:00").toLocaleDateString("tr-TR", { weekday: "long" });
 
-function StatCard({ label, icon: Icon, value, tone }: { label: string; icon: typeof Clock; value: number; tone: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}><Icon className="h-5 w-5" /></div>
-      <p className="mt-3 font-serif text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
-    </div>
-  );
-}
 
 function durumLabel(r: AttendanceRow) {
   if (r.durum === "izinli") return { t: "İzinli", c: "text-info" };
@@ -157,28 +147,28 @@ function TalebeDetay() {
         <ArrowLeft className="h-4 w-4" /> Talebeler
       </Link>
 
-      <div className="mt-3 rounded-2xl border border-border bg-card p-5 print:hidden">
-        <Avatar name={student.name} />
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <h2 className="min-w-0 truncate font-serif text-3xl font-bold">{student.name}</h2>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setSheet("edit")} className="flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm"><Pencil className="h-4 w-4" /> Düzenle</button>
-            <button onClick={remove} className="rounded-xl p-2 text-destructive" aria-label="Sil"><Trash2 className="h-5 w-5" /></button>
+      <div className="mt-3 rounded-2xl border border-border bg-card p-4 print:hidden">
+        <div className="flex items-center gap-3">
+          <Avatar name={student.name} />
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate font-serif text-2xl font-bold leading-tight">{student.name}</h2>
+            <p className="text-sm text-muted-foreground">
+              {[student.age && `${student.age} yaş`, student.group].filter(Boolean).join(" · ")}
+            </p>
           </div>
+          <button onClick={() => setSheet("edit")} className="rounded-xl border border-border p-2" aria-label="Düzenle"><Pencil className="h-4 w-4" /></button>
+          <button onClick={remove} className="rounded-xl p-2 text-destructive" aria-label="Sil"><Trash2 className="h-4 w-4" /></button>
         </div>
-        <div className="mt-2 flex items-center gap-3 text-sm text-muted-foreground">
-          {student.age && <span>{student.age} yaş</span>}
-          {student.group && <span className="rounded-full bg-amber-soft px-3 py-0.5 text-xs font-medium text-warn">{student.group}</span>}
-        </div>
-        <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
-          {student.city && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {student.city}</span>}
-          {student.startDate && <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {student.startDate}</span>}
-          {student.guardian && <span className="flex items-center gap-1.5"><User className="h-4 w-4" /> {student.guardian}</span>}
-          {student.phone && <a href={`tel:${student.phone}`} className="flex items-center gap-1.5"><Phone className="h-4 w-4" /> {student.phone}</a>}
-        </div>
+        {(student.guardian || student.phone || student.city) && (
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-sm text-muted-foreground">
+            {student.guardian && <span className="flex items-center gap-1.5"><User className="h-4 w-4" /> {student.guardian}</span>}
+            {student.phone && <a href={`tel:${student.phone}`} className="flex items-center gap-1.5 text-primary"><Phone className="h-4 w-4" /> {student.phone}</a>}
+            {student.city && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {student.city}</span>}
+          </div>
+        )}
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-1 rounded-2xl bg-surface p-1.5 print:hidden">
+      <div className="mt-4 grid grid-cols-3 gap-1 rounded-2xl bg-surface p-1.5 print:hidden">
         {tabs.map((t) => (
           <button key={t} onClick={() => setTab(t)} className={`rounded-xl py-2 text-sm ${tab === t ? "bg-card font-semibold shadow-sm" : "text-muted-foreground"}`}>{t}</button>
         ))}
@@ -186,56 +176,72 @@ function TalebeDetay() {
 
       {tab === "Yoklama" && (
         <>
-          <div className="mt-6 flex items-center justify-between">
-            <h3 className="font-serif text-2xl font-bold">Yoklama Geçmişi</h3>
-            <button onClick={() => setSheet("yoklama")} className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm text-primary-foreground"><Plus className="h-4 w-4" /> Yoklama Ekle</button>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-border bg-card p-5">
-            <h4 className="font-serif text-lg font-bold">Aylık Gelişim Grafiği</h4>
-            <p className="mt-1 text-xs text-muted-foreground">Ders ve namaz katılım oranları — son aylar (%)</p>
-            {months.length === 0 ? (
-              <p className="mt-6 text-center text-sm text-muted-foreground">Henüz veri yok.</p>
-            ) : (
-              <>
-                <div className="mt-4 flex h-40 items-end gap-4 border-b border-border px-2">
-                  {months.map((m) => (
-                    <div key={m.key} className="flex h-full flex-1 items-end justify-center gap-1.5">
-                      <div className="w-6 rounded-t-lg bg-good transition-all" style={{ height: `${Math.max(m.namaz, 2)}%` }} title={`Namaz %${m.namaz}`} />
-                      <div className="w-6 rounded-t-lg bg-warn transition-all" style={{ height: `${Math.max(m.ders, 2)}%` }} title={`Ders %${m.ders}`} />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-1 flex gap-4 px-2 text-xs text-muted-foreground">{months.map((m) => <span key={m.key} className="flex-1 text-center">{m.ay}</span>)}</div>
-              </>
-            )}
-            <div className="mt-2 flex justify-center gap-6 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-good" /> Namaz %</span>
-              <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-warn" /> Ders %</span>
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <StatCard label="Toplam Gün" icon={CalendarDays} value={st.toplam} tone="bg-surface text-foreground" />
-            <StatCard label="Derse Girdiği Gün" icon={BookOpen} value={st.ders} tone="bg-brand-soft text-primary" />
-            <StatCard label="Geç Kaldığı Gün" icon={Clock} value={st.gec} tone="bg-amber-soft text-warn" />
-            <StatCard label="İzinli Gün" icon={CalendarOff} value={st.izinli} tone="bg-sky-soft text-info" />
-            {VAKITLER.map((v) => <StatCard key={v} label={`${v} Namazı`} icon={vakitIcons[v]!} value={st.vakit[v] ?? 0} tone="bg-brand-soft text-good" />)}
-          </div>
-
-          <div className="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
-            {rows.length === 0 && <p className="p-5 text-center text-sm text-muted-foreground">Kayıt yok.</p>}
-            {rows.map((h) => (
-              <div key={h.id} className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3 text-sm last:border-0">
-                <span className="font-medium">{h.date}</span>
-                {h.durum !== "normal" && <span className={`text-xs ${durumLabel(h).c}`}>{durumLabel(h).t}</span>}
-                <span className="flex-1" />
-                {h.vakitler.map((c) => <span key={c} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs text-primary">{c} ✓</span>)}
-                <span className="text-xs text-muted-foreground">Ders: {h.ders ? "✓" : "—"}</span>
-                <button onClick={() => store.removeAttendance(h.id)} aria-label="Kaydı sil" className="text-muted-foreground"><X className="h-4 w-4" /></button>
+          <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+            {[
+              { l: "Toplam", v: st.toplam, c: "text-foreground" },
+              { l: "Ders", v: st.ders, c: "text-primary" },
+              { l: "Geç", v: st.gec, c: "text-warn" },
+              { l: "İzinli", v: st.izinli, c: "text-info" },
+            ].map((s) => (
+              <div key={s.l} className="rounded-2xl bg-surface py-3">
+                <p className={`font-serif text-2xl font-bold ${s.c}`}>{s.v}</p>
+                <p className="text-xs text-muted-foreground">{s.l}</p>
               </div>
             ))}
           </div>
+          <div className="mt-2 flex justify-between rounded-2xl bg-surface px-3 py-3">
+            {VAKITLER.map((v) => {
+              const Icon = vakitIcons[v] ?? Clock;
+              return (
+                <div key={v} className="flex flex-1 flex-col items-center">
+                  <Icon className="h-4 w-4 text-good" />
+                  <p className="mt-1 font-serif text-lg font-bold">{st.vakit[v] ?? 0}</p>
+                  <p className="text-[11px] text-muted-foreground">{v}</p>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between">
+            <h3 className="font-serif text-xl font-bold">Yoklama Geçmişi</h3>
+            <button onClick={() => setSheet("yoklama")} className="flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm text-primary-foreground"><Plus className="h-4 w-4" /> Ekle</button>
+          </div>
+          <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
+            {rows.length === 0 && <p className="p-5 text-center text-sm text-muted-foreground">Kayıt yok.</p>}
+            {rows.map((h) => (
+              <div key={h.id} className="flex items-center gap-3 border-b border-border px-4 py-3 text-sm last:border-0">
+                <div className="shrink-0">
+                  <p className="font-medium">{h.date}</p>
+                  {h.durum !== "normal" && <p className={`text-xs ${durumLabel(h).c}`}>{durumLabel(h).t}</p>}
+                </div>
+                <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-1">
+                  {h.vakitler.map((c) => <span key={c} className="rounded-full bg-brand-soft px-2 py-0.5 text-xs text-primary">{c}</span>)}
+                  {h.ders && <span className="rounded-full bg-amber-soft px-2 py-0.5 text-xs text-warn">Ders</span>}
+                  {!h.vakitler.length && !h.ders && <span className="text-xs text-muted-foreground">—</span>}
+                </div>
+                <button onClick={() => store.removeAttendance(h.id)} aria-label="Kaydı sil" className="shrink-0 text-muted-foreground"><X className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+
+          {months.length > 0 && (
+            <div className="mt-4 rounded-2xl border border-border bg-card p-4">
+              <h4 className="font-serif text-lg font-bold">Aylık Gelişim</h4>
+              <div className="mt-3 flex h-28 items-end gap-4 border-b border-border px-2">
+                {months.map((m) => (
+                  <div key={m.key} className="flex h-full flex-1 items-end justify-center gap-1.5">
+                    <div className="w-5 rounded-t-lg bg-good" style={{ height: `${Math.max(m.namaz, 2)}%` }} title={`Namaz %${m.namaz}`} />
+                    <div className="w-5 rounded-t-lg bg-warn" style={{ height: `${Math.max(m.ders, 2)}%` }} title={`Ders %${m.ders}`} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-1 flex gap-4 px-2 text-xs text-muted-foreground">{months.map((m) => <span key={m.key} className="flex-1 text-center">{m.ay}</span>)}</div>
+              <div className="mt-2 flex justify-center gap-6 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-good" /> Namaz %</span>
+                <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-warn" /> Ders %</span>
+              </div>
+            </div>
+          )}
         </>
       )}
 
@@ -256,10 +262,7 @@ function TalebeDetay() {
         <>
           <div className="mt-6 flex items-center justify-between print:hidden">
             <h3 className="font-serif text-2xl font-bold">Aile Raporu</h3>
-            <div className="flex gap-2">
-              <button onClick={() => window.print()} className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm"><Printer className="h-4 w-4" /> Yazdır</button>
-              <button onClick={() => window.print()} className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground"><Download className="h-4 w-4" /> PDF</button>
-            </div>
+            <button onClick={() => window.print()} className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground"><Printer className="h-4 w-4" /> Yazdır / PDF</button>
           </div>
           <div className="mt-4 rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center gap-4">
@@ -288,19 +291,6 @@ function TalebeDetay() {
                   <p className="text-xs text-muted-foreground">{s.l}</p>
                 </div>
               ))}
-            </div>
-            <h4 className="mt-6 font-serif text-lg font-bold">Günlük Katılım Detayı</h4>
-            <div className="mt-3 overflow-hidden rounded-xl border border-border">
-              {rows.length === 0 && <p className="p-4 text-center text-sm text-muted-foreground">Kayıt yok.</p>}
-              {[...rows].reverse().map((g) => {
-                const d = durumLabel(g);
-                return (
-                  <div key={g.id} className="flex items-center justify-between border-b border-border px-4 py-3 text-sm last:border-0">
-                    <span className="text-muted-foreground">{g.date} · <span className="capitalize">{weekday(g.date)}</span></span>
-                    <span className={`font-medium ${d.c}`}>{d.t}</span>
-                  </div>
-                );
-              })}
             </div>
             {tut.length > 0 && (
               <>
