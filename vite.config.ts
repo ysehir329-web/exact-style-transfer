@@ -12,4 +12,12 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Pre-bundle lazily imported deps at startup. Otherwise Vite discovers them on first
+    // use, re-optimizes, and already-open tabs fail lazy route imports
+    // ("Importing a module script failed").
+    optimizeDeps: {
+      include: ["lucide-react", "jspdf", "jspdf-autotable", "xlsx", "clsx", "tailwind-merge"],
+    },
+  },
 });
