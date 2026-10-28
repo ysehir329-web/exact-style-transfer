@@ -209,13 +209,17 @@ function TalebeDetay() {
           <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-card">
             {rows.length === 0 && <p className="p-5 text-center text-sm text-muted-foreground">Kayıt yok.</p>}
             {rows.map((h) => (
-              <div key={h.id} className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-3 text-sm last:border-0">
-                <span className="font-medium">{h.date}</span>
-                {h.durum !== "normal" && <span className={`text-xs ${durumLabel(h).c}`}>{durumLabel(h).t}</span>}
-                <span className="flex-1" />
-                {h.vakitler.map((c) => <span key={c} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs text-primary">{c} ✓</span>)}
-                <span className="text-xs text-muted-foreground">Ders: {h.ders ? "✓" : "—"}</span>
-                <button onClick={() => store.removeAttendance(h.id)} aria-label="Kaydı sil" className="text-muted-foreground"><X className="h-4 w-4" /></button>
+              <div key={h.id} className="flex items-center gap-3 border-b border-border px-4 py-3 text-sm last:border-0">
+                <div className="shrink-0">
+                  <p className="font-medium">{h.date}</p>
+                  {h.durum !== "normal" && <p className={`text-xs ${durumLabel(h).c}`}>{durumLabel(h).t}</p>}
+                </div>
+                <div className="flex min-w-0 flex-1 flex-wrap justify-end gap-1">
+                  {h.vakitler.map((c) => <span key={c} className="rounded-full bg-brand-soft px-2 py-0.5 text-xs text-primary">{c}</span>)}
+                  {h.ders && <span className="rounded-full bg-amber-soft px-2 py-0.5 text-xs text-warn">Ders</span>}
+                  {!h.vakitler.length && !h.ders && <span className="text-xs text-muted-foreground">—</span>}
+                </div>
+                <button onClick={() => store.removeAttendance(h.id)} aria-label="Kaydı sil" className="shrink-0 text-muted-foreground"><X className="h-4 w-4" /></button>
               </div>
             ))}
           </div>
