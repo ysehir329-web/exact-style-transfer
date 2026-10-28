@@ -27,7 +27,6 @@ const tabs = ["Yoklama", "Tutanaklar", "Aile Raporu"] as const;
 const vakitIcons = { Sabah: Sunrise, Öğle: Sun, İkindi: CloudSun, Akşam: Sunset, Yatsı: Moon } as Record<string, typeof Clock>;
 const TAGS = ["Namaza Katılmama", "Derse Geç Kalma", "Disiplinsizlik", "Arkadaşlarıyla Tartışma", "Güzel Davranış", "Başarı", "Diğer"];
 const today = () => new Date().toISOString().slice(0, 10);
-const weekday = (d: string) => new Date(d + "T12:00").toLocaleDateString("tr-TR", { weekday: "long" });
 
 
 function durumLabel(r: AttendanceRow) {
