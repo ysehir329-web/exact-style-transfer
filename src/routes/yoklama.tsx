@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Calendar, Save, Check } from "lucide-react";
+import { Calendar, Save, Check, Download } from "lucide-react";
 import { AppShell, Avatar } from "@/components/app/AppShell";
+import { ReportSheet } from "@/components/app/ReportSheet";
 import { useStore, type AttendanceRow } from "@/lib/store";
 import { VAKITLER } from "@/lib/stats";
 
@@ -25,6 +26,7 @@ function Yoklama() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [marks, setMarks] = useState<Record<string, Row>>({});
   const [saved, setSaved] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     const m: Record<string, Row> = {};
@@ -72,6 +74,13 @@ function Yoklama() {
           {saved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />} {saved ? "Kaydedildi" : "Yoklamayı Kaydet"}
         </button>
       </div>
+      <button
+        onClick={() => setReportOpen(true)}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-brand-soft py-3 text-sm font-medium text-primary transition-transform active:scale-[0.98]"
+      >
+        <Download className="h-4 w-4" /> Yoklama Raporu İndir (PDF / Excel)
+      </button>
+      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} initialDate={date} />
       {students.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
           Yoklama almak için önce <Link to="/" className="font-medium text-primary underline">talebe ekleyin</Link>.
