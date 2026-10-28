@@ -3,6 +3,7 @@ import { Download, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
 import { Sheet, Field, inputCls, primaryBtn } from "./Sheet";
 import { useStore } from "@/lib/store";
 import { PERIODS, buildReport, filterRows, periodRange, rangeLabel, type Period } from "@/lib/report";
+import { deliverFile, makePdf, makeXlsx } from "@/lib/report-export";
 
 type Format = "pdf" | "xlsx";
 
@@ -41,12 +42,11 @@ export function ReportSheet({ open, onClose, initialDate, studentId: initialStud
     setFile(null);
     const t = setTimeout(async () => {
       try {
-        const mod = await import("@/lib/report-export");
         const report = buildReport(students, rows);
         const title = `${periodLabel} Yoklama Raporu${studentName ? ` — ${studentName}` : ""}`;
         const fileBase = `yoklama-${period}-${range.start}${range.end !== range.start ? `_${range.end}` : ""}${studentName ? `-${studentName.toLocaleLowerCase("tr").replace(/\s+/g, "-")}` : ""}`;
         const input = { report, title, rangeText: rangeLabel(range), fileBase };
-        const blob = format === "pdf" ? await mod.makePdf(input) : await mod.makeXlsx(input);
+        const blob = format === "pdf" ? await makePdf(input) : await makeXlsx(input);
         if (!cancelled) setFile({ blob, name: `${fileBase}.${format}` });
       } catch (e) {
         console.error(e);
@@ -62,9 +62,7 @@ export function ReportSheet({ open, onClose, initialDate, studentId: initialStud
   }, [open, rows, students, format, period, periodLabel, range, studentName]);
 
   const download = () => {
-    if (!file) return;
-    void import("@/lib/report-export").then(() => undefined);
-    deliver(file.blob, file.name);
+    if (file) void deliverFile(file.blob, file.name);
   };
 
   const chip = (on: boolean) => `rounded-full px-3 py-1.5 text-xs transition-colors ${on ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground"}`;
@@ -115,8 +113,3 @@ export function ReportSheet({ open, onClose, initialDate, studentId: initialStud
   );
 }
 
-let deliverFn: ((b: Blob, n: string) => Promise<void>) | null = null;
-void import("@/lib/report-export").then((m) => (deliverFn = m.deliverFile)).catch(() => undefined);
-function deliver(blob: Blob, name: string) {
-  if (deliverFn) void deliverFn(blob, name);
-}
