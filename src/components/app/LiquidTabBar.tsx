@@ -68,8 +68,8 @@ export function LiquidTabBar({ tabs }: { tabs: readonly Tab[] }) {
   };
 
   // Liquid: leading edge moves fast, trailing edge lags -> stretch & settle
-  const fast = "380ms cubic-bezier(0.34, 1.4, 0.64, 1)";
-  const slow = "560ms cubic-bezier(0.5, 1.25, 0.5, 1)";
+  const fast = "220ms cubic-bezier(0.34, 1.3, 0.64, 1)";
+  const slow = "320ms cubic-bezier(0.5, 1.15, 0.5, 1)";
   const transition =
     drag != null
       ? "none"

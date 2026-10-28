@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { Download, Upload, RotateCcw } from "lucide-react";
+import { Download, Upload, RotateCcw, FileDown } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
+import { ReportSheet } from "@/components/app/ReportSheet";
 import { useStore, type State } from "@/lib/store";
 
 export const Route = createFileRoute("/menu")({
@@ -20,6 +21,7 @@ function Menu() {
   const { students, tutanaklar, attendance, resetAll, importAll } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
 
   const exportData = () => {
     const blob = new Blob([JSON.stringify({ students, tutanaklar, attendance }, null, 2)], { type: "application/json" });
@@ -49,6 +51,8 @@ function Menu() {
         ))}
       </div>
       <div className="mt-5 space-y-3">
+        <button onClick={() => setReportOpen(true)} className={btn}><FileDown className="h-5 w-5 text-primary" /> Yoklama Raporu İndir (PDF / Excel)</button>
+        <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} />
         <button onClick={exportData} className={btn}><Download className="h-5 w-5 text-primary" /> Verileri Yedekle (indir)</button>
         <button onClick={() => fileRef.current?.click()} className={btn}><Upload className="h-5 w-5 text-primary" /> Yedeği Geri Yükle</button>
         <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={(e) => importData(e.target.files?.[0])} />
