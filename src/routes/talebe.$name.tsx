@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, Pencil, Trash2, MapPin, Calendar, User, Phone, Plus,
-  CalendarDays, BookOpen, Clock, CalendarOff, Sunrise, Sun, CloudSun, Sunset, Moon,
-  CheckCircle2, CalendarX, Printer, Download, AlertTriangle, PenLine, ThumbsUp, X,
+  ArrowLeft, Pencil, Trash2, MapPin, User, Phone, Plus,
+  CalendarDays, Clock, CalendarOff, Sunrise, Sun, CloudSun, Sunset, Moon,
+  CheckCircle2, CalendarX, Printer, AlertTriangle, PenLine, ThumbsUp, X,
 } from "lucide-react";
 import { AppShell, Avatar } from "@/components/app/AppShell";
 import { Sheet, Field, inputCls, primaryBtn } from "@/components/app/Sheet";
