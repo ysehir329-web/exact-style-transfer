@@ -29,15 +29,6 @@ const TAGS = ["Namaza Katılmama", "Derse Geç Kalma", "Disiplinsizlik", "Arkada
 const today = () => new Date().toISOString().slice(0, 10);
 const weekday = (d: string) => new Date(d + "T12:00").toLocaleDateString("tr-TR", { weekday: "long" });
 
-function StatCard({ label, icon: Icon, value, tone }: { label: string; icon: typeof Clock; value: number; tone: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${tone}`}><Icon className="h-5 w-5" /></div>
-      <p className="mt-3 font-serif text-3xl font-bold">{value}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{label}</p>
-    </div>
-  );
-}
 
 function durumLabel(r: AttendanceRow) {
   if (r.durum === "izinli") return { t: "İzinli", c: "text-info" };
