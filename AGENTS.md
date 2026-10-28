@@ -8,3 +8,8 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Attendance report export (PDF via jspdf, Excel via xlsx) lives in `src/lib/report-export.ts` and loads those libraries with dynamic `import()` so they never slow app startup; period/summary logic stays pure in `src/lib/report.ts` with tests.
+- PDFs embed the subset DejaVu fonts in `public/fonts/` because jsPDF's built-in fonts cannot render Turkish letters (ğ, ş, ı, İ).
+- App data lives in browser localStorage via `src/lib/store.tsx`; there is no backend.
