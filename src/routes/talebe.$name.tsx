@@ -92,7 +92,7 @@ function TalebeDetay() {
   const months = monthly(rows);
 
   const remove = () => {
-    if (confirm(`${student.name} ve tüm kayıtları silinsin mi?`)) { store.removeStudent(id); navigate({ to: "/" }); }
+    if (confirm(`${student.name} ve tüm kayıtları silinsin mi?`)) { tut.forEach((t) => { if (t.photoId) deleteFile(t.photoId); if (t.docId) deleteFile(t.docId); }); store.removeStudent(id); navigate({ to: "/" }); }
   };
 
   const TutCard = ({ t }: { t: Tutanak }) => (
