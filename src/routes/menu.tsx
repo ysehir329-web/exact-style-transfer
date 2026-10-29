@@ -6,6 +6,7 @@ import { ReportSheet } from "@/components/app/ReportSheet";
 import { Sheet } from "@/components/app/Sheet";
 import { StudentForm, emptyStudent } from "@/components/app/StudentForm";
 import { useStore, type State } from "@/lib/store";
+import { exportFiles, importFiles } from "@/lib/attachments";
 
 export const Route = createFileRoute("/menu")({
   head: () => ({
@@ -26,8 +27,10 @@ function Menu() {
   const [reportOpen, setReportOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
-  const exportData = () => {
-    const blob = new Blob([JSON.stringify({ students, tutanaklar, attendance }, null, 2)], { type: "application/json" });
+  const exportData = async () => {
+    const ids = tutanaklar.flatMap((t) => [t.photoId, t.docId]).filter((x): x is string => Boolean(x));
+    const files = ids.length ? await exportFiles(ids).catch(() => ({})) : {};
+    const blob = new Blob([JSON.stringify({ students, tutanaklar, attendance, files }, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `kuran-kursu-yedek-${new Date().toISOString().slice(0, 10)}.json`;
@@ -37,7 +40,9 @@ function Menu() {
   const importData = async (f?: File) => {
     if (!f) return;
     try {
-      importAll(JSON.parse(await f.text()) as State);
+      const data = JSON.parse(await f.text()) as State & { files?: Parameters<typeof importFiles>[0] };
+      await importFiles(data.files).catch(() => undefined);
+      importAll(data);
       setMsg("Yedek geri yüklendi.");
     } catch {
       setMsg("Dosya okunamadı.");
