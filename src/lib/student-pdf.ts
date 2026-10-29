@@ -87,7 +87,7 @@ function header(d: Doc, kicker: string, s: Student) {
   d.rect(0, 0, PW, 44, "F");
   fill(d, C.greenMid);
   d.circle(192, 6, 28, "F");
-  d.circle(158, 40, 6, "F");
+  d.circle(150, 35, 5, "F");
   fill(d, C.amber);
   d.rect(0, 44, PW, 1.6, "F");
   font(d, 8.5, true, [205, 232, 218]);
@@ -234,7 +234,7 @@ function tutanakCard(f: Flow, t: Tutanak, a: Att) {
   const slotW = imgs.length === 2 ? (TW - 4) / 2 : Math.min(TW, 110);
   const sizes = imgs.map(({ img }) => {
     let w = slotW, h = (w * img.h) / img.w;
-    if (h > 75) { h = 75; w = (h * img.w) / img.h; }
+    if (h > 62) { h = 62; w = (h * img.w) / img.h; }
     return { w, h };
   });
   const imgH = sizes.length ? Math.max(...sizes.map((s) => s.h)) + 8 : 0;
