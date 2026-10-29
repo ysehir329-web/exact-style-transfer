@@ -13,7 +13,7 @@ const summaryBody = (r: Report) =>
 const dayLabel = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 4)}`;
 
 let fontCache: Promise<[string, string]> | null = null;
-function loadFonts() {
+export function loadFonts() {
   const toB64 = async (url: string) => {
     const buf = new Uint8Array(await (await fetch(url)).arrayBuffer());
     let s = "";

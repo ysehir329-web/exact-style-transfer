@@ -112,3 +112,12 @@ export function formatDay(s: string) {
 export function rangeLabel(r: Range) {
   return r.start === r.end ? formatDay(r.start) : `${formatDay(r.start)} – ${formatDay(r.end)}`;
 }
+
+/** ASCII file-name slug for Turkish names ("Ahmet Yılmaz" -> "ahmet-yilmaz"). */
+export function fileSlug(s: string) {
+  const map: Record<string, string> = { ı: "i", ğ: "g", ü: "u", ş: "s", ö: "o", ç: "c" };
+  return (
+    s.toLocaleLowerCase("tr").replace(/[ığüşöç]/g, (c) => map[c] ?? c).normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "talebe"
+  );
+}

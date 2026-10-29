@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   ArrowLeft, Pencil, Trash2, MapPin, User, Phone, Plus,
   CalendarDays, Clock, CalendarOff, Sunrise, Sun, CloudSun, Sunset, Moon,
-  CheckCircle2, CalendarX, Printer, AlertTriangle, PenLine, ThumbsUp, X,
+  CheckCircle2, CalendarX, AlertTriangle, PenLine, ThumbsUp, X,
 } from "@/components/app/icons";
 import { AppShell, Avatar } from "@/components/app/AppShell";
 import { Sheet, Field, inputCls, primaryBtn } from "@/components/app/Sheet";
@@ -11,7 +11,8 @@ import { StudentForm } from "@/components/app/StudentForm";
 import { TutanakForm } from "@/components/app/TutanakForm";
 import { TutanakFiles } from "@/components/app/TutanakFiles";
 import { deleteFile } from "@/lib/attachments";
-import { useStore, type AttendanceRow, type Tutanak } from "@/lib/store";
+import { useStore, type AttendanceRow, type Student, type Tutanak } from "@/lib/store";
+import { PdfButton } from "@/components/app/PdfButton";
 import { computeStats, monthly, VAKITLER } from "@/lib/stats";
 
 export const Route = createFileRoute("/talebe/$name")({
@@ -67,6 +68,43 @@ function AttendanceForm({ onSubmit }: { onSubmit: (a: Omit<AttendanceRow, "id" |
   );
 }
 
+function TutCard({ t, student, onSign, onRemove }: { t: Tutanak; student: Student; onSign?: () => void; onRemove?: () => void }) {
+  return (
+    <div className={`rounded-2xl border bg-card p-4 ${t.positive ? "border-good/40" : "border-warn/40"}`}>
+      <div className="flex items-start gap-3">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${t.positive ? "bg-brand-soft" : "bg-amber-soft"}`}>
+          {t.positive ? <ThumbsUp className="h-5 w-5 text-good" /> : <AlertTriangle className="h-5 w-5 text-warn" />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">{t.title}</p>
+          <p className="text-xs text-muted-foreground">{t.date}</p>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <span className={`rounded-full px-3 py-1 text-xs ${t.positive ? "bg-good text-primary-foreground" : "bg-destructive text-destructive-foreground"}`}>{t.tag}</span>
+          {onSign ? (
+            <button onClick={onSign} className={`flex items-center gap-1 text-xs ${t.signed ? "text-good" : "text-muted-foreground"}`}>
+              <PenLine className="h-3.5 w-3.5" /> {t.signed ? "İmzalı" : "İmzala"}
+            </button>
+          ) : (
+            <span className={`text-xs ${t.signed ? "text-good" : "text-muted-foreground"}`}>{t.signed ? "Veli imzalı" : "İmza bekliyor"}</span>
+          )}
+        </div>
+      </div>
+      {t.body && <p className="mt-3 whitespace-pre-wrap rounded-xl bg-surface p-4 text-sm leading-relaxed">{t.body}</p>}
+      <TutanakFiles photoId={t.photoId} docId={t.docId} />
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <PdfButton
+          make={() => import("@/lib/student-pdf").then((m) => m.makeTutanakPdf(student, t))}
+          depsKey={JSON.stringify([t, student])}
+          label="Tutanak PDF"
+          className="flex items-center gap-1.5 rounded-xl bg-brand-soft px-3 py-2 text-xs font-medium text-primary"
+        />
+        {onRemove && <button onClick={onRemove} className="flex items-center gap-1 text-xs text-destructive"><Trash2 className="h-3.5 w-3.5" /> Sil</button>}
+      </div>
+    </div>
+  );
+}
+
 function TalebeDetay() {
   const { name: raw } = Route.useParams();
   const store = useStore();
@@ -95,28 +133,12 @@ function TalebeDetay() {
     if (confirm(`${student.name} ve tüm kayıtları silinsin mi?`)) { tut.forEach((t) => { if (t.photoId) deleteFile(t.photoId); if (t.docId) deleteFile(t.docId); }); store.removeStudent(id); navigate({ to: "/" }); }
   };
 
-  const TutCard = ({ t }: { t: Tutanak }) => (
-    <div className={`rounded-2xl border bg-card p-4 ${t.positive ? "border-good/40" : "border-warn/40"}`}>
-      <div className="flex items-start gap-3">
-        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${t.positive ? "bg-brand-soft" : "bg-amber-soft"}`}>
-          {t.positive ? <ThumbsUp className="h-5 w-5 text-good" /> : <AlertTriangle className="h-5 w-5 text-warn" />}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold">{t.title}</p>
-          <p className="text-xs text-muted-foreground">{t.date}</p>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className={`rounded-full px-3 py-1 text-xs ${t.positive ? "bg-good text-primary-foreground" : "bg-destructive text-destructive-foreground"}`}>{t.tag}</span>
-          <button onClick={() => store.updateTutanak(t.id, { signed: !t.signed })} className={`flex items-center gap-1 text-xs ${t.signed ? "text-good" : "text-muted-foreground"}`}>
-            <PenLine className="h-3.5 w-3.5" /> {t.signed ? "İmzalı" : "İmzala"}
-          </button>
-        </div>
-      </div>
-      {t.body && <p className="mt-3 whitespace-pre-wrap rounded-xl bg-surface p-4 text-sm leading-relaxed">{t.body}</p>}
-      <TutanakFiles photoId={t.photoId} docId={t.docId} />
-      <button onClick={() => { if (confirm("Tutanak silinsin mi?")) { store.removeTutanak(t.id); if (t.photoId) deleteFile(t.photoId); if (t.docId) deleteFile(t.docId); } }} className="mt-2 flex items-center gap-1 text-xs text-destructive"><Trash2 className="h-3.5 w-3.5" /> Sil</button>
-    </div>
-  );
+  const removeTut = (t: Tutanak) => {
+    if (!confirm("Tutanak silinsin mi?")) return;
+    store.removeTutanak(t.id);
+    if (t.photoId) deleteFile(t.photoId);
+    if (t.docId) deleteFile(t.docId);
+  };
 
   const pos = tut.filter((t) => t.positive);
   const neg = tut.filter((t) => !t.positive);
@@ -232,9 +254,9 @@ function TalebeDetay() {
             <button onClick={() => setSheet("tutanak")} className="flex shrink-0 items-center gap-2 rounded-xl bg-destructive px-4 py-2.5 text-sm text-destructive-foreground"><Plus className="h-4 w-4" /> Tutanak Ekle</button>
           </div>
           <h4 className="mt-5 font-serif text-lg font-bold text-primary">Olumlu ({pos.length})</h4>
-          <div className="mt-3 space-y-4">{pos.length ? pos.map((t) => <TutCard key={t.id} t={t} />) : <p className="text-sm text-muted-foreground">Kayıt yok.</p>}</div>
+          <div className="mt-3 space-y-4">{pos.length ? pos.map((t) => <TutCard key={t.id} t={t} student={student} onSign={() => store.updateTutanak(t.id, { signed: !t.signed })} onRemove={() => removeTut(t)} />) : <p className="text-sm text-muted-foreground">Kayıt yok.</p>}</div>
           <h4 className="mt-5 font-serif text-lg font-bold text-warn">Olumsuz ({neg.length})</h4>
-          <div className="mt-3 space-y-4">{neg.length ? neg.map((t) => <TutCard key={t.id} t={t} />) : <p className="text-sm text-muted-foreground">Kayıt yok.</p>}</div>
+          <div className="mt-3 space-y-4">{neg.length ? neg.map((t) => <TutCard key={t.id} t={t} student={student} onSign={() => store.updateTutanak(t.id, { signed: !t.signed })} onRemove={() => removeTut(t)} />) : <p className="text-sm text-muted-foreground">Kayıt yok.</p>}</div>
         </>
       )}
 
@@ -242,8 +264,15 @@ function TalebeDetay() {
         <>
           <div className="mt-6 flex items-center justify-between print:hidden">
             <h3 className="font-serif text-2xl font-bold">Aile Raporu</h3>
-            <button onClick={() => window.print()} className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground"><Printer className="h-4 w-4" /> Yazdır / PDF</button>
+            <PdfButton
+              auto
+              make={() => import("@/lib/student-pdf").then((m) => m.makeStudentPdf(student, rows, tut))}
+              depsKey={JSON.stringify([student, rows, tut])}
+              label="PDF İndir"
+              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-70"
+            />
           </div>
+          <p className="mt-1 text-xs text-muted-foreground">PDF; yoklama özeti, tüm tutanaklar, fotoğraflar ve imzalı belgeleri içerir.</p>
           <div className="mt-4 rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center gap-4">
               <Avatar name={student.name} />
@@ -272,14 +301,10 @@ function TalebeDetay() {
                 </div>
               ))}
             </div>
-            {tut.length > 0 && (
-              <>
-                <h4 className="mt-6 font-serif text-lg font-bold">Davranış Kayıtları</h4>
-                <ul className="mt-2 space-y-1 text-sm">
-                  {tut.map((t) => <li key={t.id}><span className={t.positive ? "text-good" : "text-warn"}>●</span> {t.date} — {t.title}</li>)}
-                </ul>
-              </>
-            )}
+          </div>
+          <h4 className="mt-6 font-serif text-lg font-bold">Tutanaklar ({tut.length})</h4>
+          <div className="mt-3 space-y-4">
+            {tut.length ? tut.map((t) => <TutCard key={t.id} t={t} student={student} />) : <p className="text-sm text-muted-foreground">Kayıtlı tutanak yok.</p>}
           </div>
         </>
       )}
