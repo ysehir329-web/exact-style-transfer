@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Camera, FileText } from "./icons";
 import { getFile } from "@/lib/attachments";
 
-function useFileUrl(id?: string) {
+function useFileUrl(id?: string | undefined) {
   const [file, setFile] = useState<{ url: string; type: string; name: string } | null>(null);
   useEffect(() => {
     if (!id) return;
@@ -18,7 +18,7 @@ function useFileUrl(id?: string) {
   return file;
 }
 
-function One({ id, label, icon: Icon }: { id?: string; label: string; icon: typeof Camera }) {
+function One({ id, label, icon: Icon }: { id?: string | undefined; label: string; icon: typeof Camera }) {
   const f = useFileUrl(id);
   if (!id || !f) return null;
   return (
@@ -31,7 +31,7 @@ function One({ id, label, icon: Icon }: { id?: string; label: string; icon: type
   );
 }
 
-export function TutanakFiles({ photoId, docId }: { photoId?: string; docId?: string }) {
+export function TutanakFiles({ photoId, docId }: { photoId?: string | undefined; docId?: string | undefined }) {
   if (!photoId && !docId) return null;
   return (
     <div className="mt-3 grid grid-cols-2 gap-2">
