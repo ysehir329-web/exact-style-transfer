@@ -87,7 +87,7 @@ function header(d: Doc, kicker: string, s: Student) {
   d.rect(0, 0, PW, 44, "F");
   fill(d, C.greenMid);
   d.circle(192, 6, 28, "F");
-  d.circle(160, 46, 12, "F");
+  d.circle(158, 40, 6, "F");
   fill(d, C.amber);
   d.rect(0, 44, PW, 1.6, "F");
   font(d, 8.5, true, [205, 232, 218]);
@@ -122,8 +122,8 @@ function infoPanel(f: Flow, s: Student) {
   f.y += h + 8;
 }
 
-function section(f: Flow, title: string, color: RGB, right?: string) {
-  f.ensure(16);
+function section(f: Flow, title: string, color: RGB, right?: string, keepWith = 0) {
+  f.ensure(16 + keepWith);
   const d = f.doc;
   fill(d, color);
   d.roundedRect(M, f.y - 4.5, 2.6, 6.5, 1, 1, "F");
@@ -238,7 +238,7 @@ function tutanakCard(f: Flow, t: Tutanak, a: Att) {
     return { w, h };
   });
   const imgH = sizes.length ? Math.max(...sizes.map((s) => s.h)) + 8 : 0;
-  const headH = titleLines.length * 5.2 + 7;
+  const headH = titleLines.length * 5.2 + 9;
   const bodyH = bodyLines.length ? bodyLines.length * lh + 8 : 0;
   const metaH = 7 + (a.docPdf ? 5 : 0);
   const total = 6 + headH + bodyH + metaH + imgH + 3;
@@ -368,7 +368,7 @@ export async function makeStudentPdf(s: Student, rows: AttendanceRow[], tut: Tut
   section(f, "Katılım Özeti", C.green, `${rows.length} günlük kayıt`);
   statTiles(f, rows);
   const pos = tut.filter((t) => t.positive).length;
-  section(f, "Tutanaklar & Davranış Kayıtları", C.red, `Olumlu ${pos} · Olumsuz ${tut.length - pos}`);
+  section(f, "Tutanaklar & Davranış Kayıtları", C.red, `Olumlu ${pos} · Olumsuz ${tut.length - pos}`, tut.length ? 60 : 0);
   if (!tut.length) {
     font(d, 10, false, C.gray);
     d.text("Kayıtlı tutanak bulunmuyor.", M, f.y + 4);
