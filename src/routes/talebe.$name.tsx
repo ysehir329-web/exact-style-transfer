@@ -8,6 +8,9 @@ import {
 import { AppShell, Avatar } from "@/components/app/AppShell";
 import { Sheet, Field, inputCls, primaryBtn } from "@/components/app/Sheet";
 import { StudentForm } from "@/components/app/StudentForm";
+import { TutanakForm } from "@/components/app/TutanakForm";
+import { TutanakFiles } from "@/components/app/TutanakFiles";
+import { deleteFile } from "@/lib/attachments";
 import { useStore, type AttendanceRow, type Tutanak } from "@/lib/store";
 import { computeStats, monthly, VAKITLER } from "@/lib/stats";
 
@@ -25,7 +28,6 @@ export const Route = createFileRoute("/talebe/$name")({
 
 const tabs = ["Yoklama", "Tutanaklar", "Aile Raporu"] as const;
 const vakitIcons = { Sabah: Sunrise, Öğle: Sun, İkindi: CloudSun, Akşam: Sunset, Yatsı: Moon } as Record<string, typeof Clock>;
-const TAGS = ["Namaza Katılmama", "Derse Geç Kalma", "Disiplinsizlik", "Arkadaşlarıyla Tartışma", "Güzel Davranış", "Başarı", "Diğer"];
 const today = () => new Date().toISOString().slice(0, 10);
 
 
@@ -61,29 +63,6 @@ function AttendanceForm({ onSubmit }: { onSubmit: (a: Omit<AttendanceRow, "id" |
         ))}
       </div>
       <button className={primaryBtn}>Kaydet</button>
-    </form>
-  );
-}
-
-function TutanakForm({ onSubmit }: { onSubmit: (t: Omit<Tutanak, "id" | "studentId">) => void }) {
-  const [f, setF] = useState({ title: "", tag: TAGS[0]!, date: today(), body: "", positive: false, signed: false });
-  return (
-    <form onSubmit={(e) => { e.preventDefault(); if (f.title.trim()) onSubmit(f); }}>
-      <div className="mb-3 grid grid-cols-2 gap-2">
-        {[false, true].map((p) => (
-          <button type="button" key={String(p)} onClick={() => setF({ ...f, positive: p })} className={`rounded-xl border py-2 text-sm ${f.positive === p ? (p ? "border-good bg-good text-primary-foreground" : "border-destructive bg-destructive text-destructive-foreground") : "border-border bg-surface"}`}>
-            {p ? "Olumlu" : "Olumsuz"}
-          </button>
-        ))}
-      </div>
-      <Field label="Başlık *"><input className={inputCls} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="Konu"><select className={inputCls} value={f.tag} onChange={(e) => setF({ ...f, tag: e.target.value })}>{TAGS.map((t) => <option key={t}>{t}</option>)}</select></Field>
-        <Field label="Tarih"><input type="date" className={inputCls} value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} /></Field>
-      </div>
-      <Field label="Açıklama"><textarea rows={5} className={inputCls} value={f.body} onChange={(e) => setF({ ...f, body: e.target.value })} /></Field>
-      <label className="mb-4 flex items-center gap-2 text-sm"><input type="checkbox" checked={f.signed} onChange={(e) => setF({ ...f, signed: e.target.checked })} /> Veli tarafından imzalandı</label>
-      <button className={primaryBtn} disabled={!f.title.trim()}>Kaydet</button>
     </form>
   );
 }
@@ -134,7 +113,8 @@ function TalebeDetay() {
         </div>
       </div>
       {t.body && <p className="mt-3 whitespace-pre-wrap rounded-xl bg-surface p-4 text-sm leading-relaxed">{t.body}</p>}
-      <button onClick={() => confirm("Tutanak silinsin mi?") && store.removeTutanak(t.id)} className="mt-2 flex items-center gap-1 text-xs text-destructive"><Trash2 className="h-3.5 w-3.5" /> Sil</button>
+      <TutanakFiles photoId={t.photoId} docId={t.docId} />
+      <button onClick={() => { if (confirm("Tutanak silinsin mi?")) { store.removeTutanak(t.id); if (t.photoId) deleteFile(t.photoId); if (t.docId) deleteFile(t.docId); } }} className="mt-2 flex items-center gap-1 text-xs text-destructive"><Trash2 className="h-3.5 w-3.5" /> Sil</button>
     </div>
   );
 
@@ -310,8 +290,8 @@ function TalebeDetay() {
       <Sheet open={sheet === "yoklama"} onClose={() => setSheet(null)} title="Yoklama Ekle">
         <AttendanceForm onSubmit={(a) => { store.addAttendance({ ...a, studentId: id }); setSheet(null); }} />
       </Sheet>
-      <Sheet open={sheet === "tutanak"} onClose={() => setSheet(null)} title="Tutanak Ekle">
-        <TutanakForm onSubmit={(t) => { store.addTutanak({ ...t, studentId: id }); setSheet(null); }} />
+      <Sheet open={sheet === "tutanak"} onClose={() => setSheet(null)} title="Yeni Tutanak">
+        <TutanakForm onCancel={() => setSheet(null)} onSubmit={(t) => { store.addTutanak({ ...t, studentId: id }); setSheet(null); }} />
       </Sheet>
     </AppShell>
   );

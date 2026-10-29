@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Camera, FileText, Loader2, Sparkles } from "./icons";
 import { inputCls, primaryBtn } from "./Sheet";
@@ -57,7 +57,7 @@ export function TutanakForm({ onSubmit, onCancel }: {
     }
   };
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
