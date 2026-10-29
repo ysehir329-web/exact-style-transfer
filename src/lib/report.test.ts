@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { fileSlug, describe, expect, it } from "vitest";
 import { buildReport, filterRows, periodRange } from "./report";
 import type { AttendanceRow, Student } from "./store";
 
@@ -36,5 +36,12 @@ describe("report summary", () => {
   it("totals prayers, lessons, late and excused days per student", () => {
     const s = buildReport(students, rows.slice(1)).summary[0]!;
     expect(s).toMatchObject({ gun: 3, kilinan: 6, toplamVakit: 15, namazYuzde: 40, ders: 2, dersYuzde: 67, gec: 1, izinli: 1 });
+  });
+});
+
+describe("file names", () => {
+  it("turns Turkish names into safe file names", () => {
+    expect(fileSlug("Ahmet Yılmaz")).toBe("ahmet-yilmaz");
+    expect(fileSlug("İsmail Çağrı Öztürk")).toBe("ismail-cagri-ozturk");
   });
 });
