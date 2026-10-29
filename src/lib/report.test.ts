@@ -1,5 +1,5 @@
-import { fileSlug, describe, expect, it } from "vitest";
-import { buildReport, filterRows, periodRange } from "./report";
+import { describe, expect, it } from "vitest";
+import { buildReport, fileSlug, filterRows, periodRange } from "./report";
 import type { AttendanceRow, Student } from "./store";
 
 const row = (id: string, date: string, vakitler: string[], ders = false, durum: AttendanceRow["durum"] = "normal"): AttendanceRow => ({ id, studentId: "s1", date, vakitler, ders, durum });
