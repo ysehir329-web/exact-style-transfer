@@ -21,6 +21,9 @@ export type Tutanak = {
   body: string;
   positive: boolean;
   signed: boolean;
+  /** Attachment ids in IndexedDB (see attachments.ts). */
+  photoId?: string;
+  docId?: string;
 };
 
 export type AttendanceRow = {
